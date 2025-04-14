@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2 } from "lucide-react";
+import { Play, Pause, Volume2, Download } from "lucide-react";
 
 interface Preset {
   name: string;
@@ -47,6 +47,9 @@ export default function BinauralBeatGenerator() {
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
+    const startTime = Date.now();
+    const amplitude = 0.15;
+
     const draw = () => {
       if (!canvasRef.current) return;
       const width = canvasRef.current.width;
@@ -56,13 +59,20 @@ export default function BinauralBeatGenerator() {
       ctx.fillRect(0, 0, width, height);
 
       if (isPlaying) {
-        const time = Date.now() / 1000;
+        const currentTime = (Date.now() - startTime) / 1000;
         ctx.beginPath();
         ctx.moveTo(0, height / 2);
 
+        // Draw two waves - one for each ear
         for (let x = 0; x < width; x++) {
-          const t = time + x / width;
-          const y = Math.sin(2 * Math.PI * baseFreq * t) * height * 0.2 + height / 2;
+          const t = x / width;
+          const leftWave = Math.sin(2 * Math.PI * (baseFreq * t + currentTime));
+          const rightWave = Math.sin(2 * Math.PI * ((baseFreq + beatFreq) * t + currentTime));
+          
+          // Combine the waves with a beating effect
+          const combinedWave = (leftWave + rightWave) / 2;
+          const y = height / 2 + combinedWave * height * amplitude;
+          
           ctx.lineTo(x, y);
         }
 
@@ -76,7 +86,7 @@ export default function BinauralBeatGenerator() {
 
     draw();
     return () => cancelAnimationFrame(animationRef.current);
-  }, [isPlaying, baseFreq]);
+  }, [isPlaying, baseFreq, beatFreq]);
 
   const togglePlay = () => {
     if (!isPlaying) {
@@ -129,16 +139,37 @@ export default function BinauralBeatGenerator() {
     }
   }, [baseFreq, beatFreq, isPlaying]);
 
+  const downloadWave = () => {
+    if (!canvasRef.current) return;
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.download = `wave-${baseFreq}-${beatFreq}.png`;
+    link.href = canvasRef.current.toDataURL('image/png');
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] p-8">
       <div className="w-full max-w-2xl space-y-8">
-        <div className="aspect-[2/1] w-full bg-cyan-500/5 rounded-xl border border-cyan-500/10 overflow-hidden">
+        <div className="aspect-[2/1] w-full bg-cyan-500/5 rounded-xl border border-cyan-500/10 overflow-hidden relative">
           <canvas
             ref={canvasRef}
             width={800}
             height={400}
             className="w-full h-full"
           />
+          <button
+            onClick={downloadWave}
+            className="absolute top-3 right-3 p-2 rounded-lg transition-colors hover:bg-white/5 text-white/50 hover:text-white/90"
+            title="Download wave screenshot"
+          >
+            <Download className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -205,7 +236,7 @@ export default function BinauralBeatGenerator() {
           </div>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4">
           <button
             onClick={togglePlay}
             className={`px-8 py-3 rounded-full font-medium transition-all ${
