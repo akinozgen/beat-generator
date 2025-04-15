@@ -154,7 +154,7 @@ export default function BinauralBeatGenerator() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] p-8">
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#0f172a] h-[calc(100vh-4rem)] p-8">
       <div className="w-full max-w-2xl space-y-8">
         <div className="aspect-[2/1] w-full bg-cyan-500/5 rounded-xl border border-cyan-500/10 overflow-hidden relative">
           <canvas

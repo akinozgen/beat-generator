@@ -87,7 +87,7 @@ export default function VirtualPiano() {
   }, [playNote, stopNote]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] p-8 space-y-8">
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#0f172a] h-[calc(100vh-4rem)] p-8 space-y-8">
       <div className="grid grid-cols-9 gap-2">
         {keys.map(({ key, note, freq }) => (
           <button
