@@ -24,7 +24,7 @@ export default function CodeEditor() {
   } = useEditorStore();
   
   const activeTabData = openTabs.find(tab => tab.path === activeTab);
-  const saveTimeoutRef = useRef<number>();
+  const saveTimeoutRef = useRef<number | undefined>(undefined);
 
   const handleOpenDirectory = async () => {
     try {

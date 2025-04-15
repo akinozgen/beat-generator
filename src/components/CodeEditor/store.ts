@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { EditorState, EditorTab, FileEntry } from './types';
+import type { EditorState, Tab, FileEntry } from './types';
 import { buildFileTree } from './utils';
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -63,7 +63,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 
-  addTab: (tab: EditorTab) =>
+  addTab: (tab: Tab) =>
     set((state) => ({
       openTabs: state.openTabs.some((t) => t.path === tab.path)
         ? state.openTabs.map((t) => (t.path === tab.path ? tab : t))

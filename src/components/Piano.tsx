@@ -36,7 +36,7 @@ export default function VirtualPiano() {
 
   const playNote = useCallback(({ freq, key }: Key) => {
     if (!audioCtx.current)
-      audioCtx.current = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx.current = new AudioContext();
 
     const osc = audioCtx.current.createOscillator();
     const gain = audioCtx.current.createGain();
